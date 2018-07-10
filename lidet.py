@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-import pigpio
+import datetime
 import signal
+import pigpio
 
 def OnStrike(gpio, level, tick):
-    print('Lightning! gpio={0}, level={1}, tick={2}'.format(gpio, level, tick))
+    with open('strike.log', 'at') as logfile:
+        logfile.write('{0} {1} {2}\n'.format(datetime.datetime.utcnow(), tick, level))
 
 LIDETPIN = 21
 
