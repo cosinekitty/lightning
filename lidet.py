@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import sys
 import datetime
 import signal
 import pigpio
@@ -9,12 +10,16 @@ def OnStrike(gpio, level, tick):
 
 LIDETPIN = 21
 
-pins = pigpio.pi()
-pins.set_mode(LIDETPIN, pigpio.INPUT)
-pins.set_pull_up_down(LIDETPIN, pigpio.PUD_UP)
-pins.callback(LIDETPIN, pigpio.EITHER_EDGE, OnStrike)
+if __name__ == '__main__':
+    pins = pigpio.pi()
+    pins.set_mode(LIDETPIN, pigpio.INPUT)
+    pins.set_pull_up_down(LIDETPIN, pigpio.PUD_UP)
+    pins.callback(LIDETPIN, pigpio.EITHER_EDGE, OnStrike)
 
-print('Ready.')
-signal.pause()
+    try:
+        signal.pause()
+    except (KeyboardInterrupt, SystemExit):
+        pass
 
-pins.stop()
+    pins.stop()
+    sys.exit(0)
