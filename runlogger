@@ -1,3 +1,25 @@
 #!/bin/bash
+Log()
+{
+    echo "$(date -I) $1" >> logger.log
+    return 0
+}
+
 cd $(dirname $0)
-python3 lidet.py
+echo "" >> logger.log
+Log "Snoozing 20 seconds."
+sleep 20
+while true; do
+    touch strike.log
+    Log "Starting lidet.py"
+    python3 lidet.py
+    if [ -f pause_logger ]; then
+        Log "Waiting for pause_logger file to disappear."
+        while [ -f pause_logger ]; do
+            sleep 1
+        done
+    else
+        Log "Snoozing 5 seconds before restarting."
+        sleep 5
+    fi
+done
