@@ -4,9 +4,19 @@ import datetime
 import signal
 import pigpio
 
+CurrentStrike = None
+
 def OnStrike(gpio, level, tick):
-    with open('strike.log', 'at') as logfile:
-        logfile.write('{0} {1} {2}\n'.format(datetime.datetime.utcnow(), tick, level))
+    global CurrentStrike
+    utc = datetime.datetime.utcnow()
+    if level == 0:
+        CurrentStrike = { 'utc': utc, 'tick': tick }
+    else:
+        with open('strike.log', 'at') as logfile:
+            utcDelta = (utc - CurrentStrike['utc']).total_seconds()
+            tickDelta = tick - CurrentStrike['tick']
+            logfile.write('{0} {1:0.6f} {2:10d} {3:6d}\n'.format(CurrentStrike['utc'], utcDelta, tick, tickDelta))
+        CurrentStrike = None
 
 LIDETPIN = 21
 
