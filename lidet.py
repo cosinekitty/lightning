@@ -23,14 +23,20 @@ LIDETPIN = 21
 
 if __name__ == '__main__':
     pins = pigpio.pi()
+    if not pins.connected:
+        sys.exit(9)
+
     pins.set_mode(LIDETPIN, pigpio.INPUT)
     pins.set_pull_up_down(LIDETPIN, pigpio.PUD_UP)
     pins.callback(LIDETPIN, pigpio.EITHER_EDGE, OnStrike)
 
-    try:
-        signal.pause()
-    except (KeyboardInterrupt, SystemExit):
-        pass
+    if len(sys.argv) == 2 and sys.argv[1] == 'hack':
+        print('Immediate exit hack.')
+    else:
+        try:
+            signal.pause()
+        except (KeyboardInterrupt, SystemExit):
+            pass
 
     pins.stop()
     sys.exit(0)
