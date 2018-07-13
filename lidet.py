@@ -9,13 +9,14 @@ CurrentStrike = None
 def OnStrike(gpio, level, tick):
     global CurrentStrike
     utc = datetime.datetime.utcnow()
+    # print('{0} {1} {2}'.format(gpio, level, tick))
     if level == 0:
         CurrentStrike = { 'utc': utc, 'tick': tick }
     else:
         with open('strike.log', 'at') as logfile:
             utcDelta = (utc - CurrentStrike['utc']).total_seconds()
             tickDelta = tick - CurrentStrike['tick']
-            logfile.write('{0} {1:0.6f} {2:10d} {3:6d}\n'.format(CurrentStrike['utc'], utcDelta, tick, tickDelta))
+            logfile.write('{0} {1:0.6f} {2:10d} {3:4d}\n'.format(CurrentStrike['utc'], utcDelta, tick, tickDelta))
         CurrentStrike = None
 
 LIDETPIN = 21
