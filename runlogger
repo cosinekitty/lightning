@@ -5,10 +5,13 @@ Log()
     return 0
 }
 
+PRESNOOZE=20
+
 cd $(dirname $0)
+rm -f pause_logger
 echo "" >> logger.log
-Log "Snoozing 20 seconds."
-sleep 20
+Log "Snoozing $PRESNOOZE seconds."
+sleep $PRESNOOZE
 while true; do
     touch strike.log
     Log "Starting lidet.py"
