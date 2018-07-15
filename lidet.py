@@ -16,7 +16,7 @@ def OnStrike(gpio, level, tick):
         # print('{0} {1} {2}'.format(gpio, level, tick))
         if level == 0:
             CurrentStrike = { 'utc': utc, 'tick': tick }
-        else:
+        elif CurrentStrike:
             with open('strike.log', 'at') as logfile:
                 utcDelta = (utc - CurrentStrike['utc']).total_seconds()
                 tickDelta = tick - CurrentStrike['tick']
