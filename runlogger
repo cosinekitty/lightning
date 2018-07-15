@@ -12,9 +12,7 @@ rm -f pause_logger
 echo "" >> logger.log
 Log "Snoozing $PRESNOOZE seconds."
 sleep $PRESNOOZE
-Log "Hack invocation..."
-python3 lidet.py hack
-Log "Hack invocation of lidet.py returned $?"
+
 while true; do
     touch strike.log
     Log "Starting lidet.py"

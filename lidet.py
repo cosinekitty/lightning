@@ -1,23 +1,38 @@
 #!/usr/bin/env python3
 import sys
+import time
 import datetime
-import signal
+import traceback
 import pigpio
 
 CurrentStrike = None
+FatalError = False
 
 def OnStrike(gpio, level, tick):
     global CurrentStrike
-    utc = datetime.datetime.utcnow()
-    # print('{0} {1} {2}'.format(gpio, level, tick))
-    if level == 0:
-        CurrentStrike = { 'utc': utc, 'tick': tick }
-    else:
-        with open('strike.log', 'at') as logfile:
-            utcDelta = (utc - CurrentStrike['utc']).total_seconds()
-            tickDelta = tick - CurrentStrike['tick']
-            logfile.write('{0} {1:0.6f} {2:10d} {3:4d}\n'.format(CurrentStrike['utc'], utcDelta, tick, tickDelta))
-        CurrentStrike = None
+    global FatalError
+    try:
+        utc = datetime.datetime.utcnow()
+        # print('{0} {1} {2}'.format(gpio, level, tick))
+        if level == 0:
+            CurrentStrike = { 'utc': utc, 'tick': tick }
+        else:
+            with open('strike.log', 'at') as logfile:
+                utcDelta = (utc - CurrentStrike['utc']).total_seconds()
+                tickDelta = tick - CurrentStrike['tick']
+                logfile.write('{0} {1:0.6f} {2:10d} {3:4d}\n'.format(CurrentStrike['utc'], utcDelta, tick, tickDelta))
+            CurrentStrike = None
+    except:
+        try:
+            # This program runs as a cron job, so I don't see any console output.
+            # Write the exception stack trace to the logger.log file so I can see it.
+            tb = traceback.format_exc()
+            now = str(datetime.datetime.now())
+            with open('logger.log', 'at') as dumpfile:
+                dumpfile.write('{0} *** EXCEPTION in lidet.py: {1}'.format(now, tb))
+        except:
+            pass    # can't do anything about exceptions in the exception handler!
+        FatalError = True
 
 LIDETPIN = 21
 
@@ -34,7 +49,10 @@ if __name__ == '__main__':
         print('Immediate exit hack.')
     else:
         try:
-            signal.pause()
+            while True:
+                time.sleep(1)
+                if FatalError:
+                    sys.exit(8)
         except (KeyboardInterrupt, SystemExit):
             pass
 
