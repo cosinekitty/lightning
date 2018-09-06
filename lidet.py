@@ -45,16 +45,13 @@ if __name__ == '__main__':
     pins.set_pull_up_down(LIDETPIN, pigpio.PUD_UP)
     pins.callback(LIDETPIN, pigpio.EITHER_EDGE, OnStrike)
 
-    if len(sys.argv) == 2 and sys.argv[1] == 'hack':
-        print('Immediate exit hack.')
-    else:
-        try:
-            while True:
-                time.sleep(1)
-                if FatalError:
-                    sys.exit(8)
-        except (KeyboardInterrupt, SystemExit):
-            pass
+    try:
+        while True:
+            time.sleep(1)
+            if FatalError:
+                sys.exit(8)
+    except (KeyboardInterrupt, SystemExit):
+        pass
 
     pins.stop()
     sys.exit(0)
